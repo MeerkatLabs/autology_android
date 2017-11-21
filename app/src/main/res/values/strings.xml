@@ -1,6 +1,16 @@
 <resources>
+    <!-- Global -->
     <string name="app_name">Autology</string>
+
+    <!-- Main Activity -->
     <string name="action_settings">Settings</string>
+
+    <!-- Settings Activity -->
+    <string name="settings__parent_dir">[Parent Directory]</string>
+
+    <!-- Preferences -->
     <string name="pref_storage_settings">Storage Settings</string>
-    <string name="pref_title__log_directory">Log Directory</string>
+
+    <string name="pref_title__storage_directory">Storage Directory</string>
+    <string name="pref_key__storage_directory" translatable="false">pref_key__storage_directory</string>
 </resources>

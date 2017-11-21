@@ -2,8 +2,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/pref_storage_settings">
-        <Preference android:key="@+string/pref_key__log_directory"
-            android:title="@string/pref_title__log_directory"
+        <Preference android:key="pref_key__storage_directory"
+            android:title="@string/pref_title__storage_directory"
             android:defaultValue="/storage/emulated/0/autology">
 
         </Preference>

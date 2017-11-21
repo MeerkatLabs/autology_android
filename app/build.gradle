@@ -28,4 +28,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     // Adding in the support compatibility stuff for the tool bar.
     compile 'com.android.support:support-core-utils:26.1.0'
+
+    // Material Dialogs
+    compile 'com.afollestad.material-dialogs:core:0.9.5.0'
+    compile 'com.afollestad.material-dialogs:commons:0.9.5.0'
+
 }
