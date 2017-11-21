@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_storage_settings">
+        <Preference android:key="@+string/pref_key__log_directory"
+            android:title="@string/pref_title__log_directory"
+            android:defaultValue="/storage/emulated/0/autology">
+
+        </Preference>
+    </PreferenceCategory>
+
+</PreferenceScreen>
