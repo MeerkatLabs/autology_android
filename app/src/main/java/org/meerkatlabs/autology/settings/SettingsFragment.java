@@ -1,4 +1,4 @@
-package org.meerkatlabs.autology.fragments;
+package org.meerkatlabs.autology.settings;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
