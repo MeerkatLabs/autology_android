@@ -5,7 +5,15 @@
     <!-- Main Activity -->
     <string name="action_settings">Settings</string>
 
+    <!-- Storage Permission Fragment -->
+    <string name="storage_permission__title">Permission Required</string>
+    <string name="storage_permission__description"><![CDATA[
+        Autology requires read/write access to external storage to store the log files that are created.
+    ]]></string>
+    <string name="permission__ok">OK</string>
+
     <!-- Settings Activity -->
+    <string name="settings__title">Settings</string>
     <string name="settings__parent_dir">[Parent Directory]</string>
 
     <!-- Preferences -->

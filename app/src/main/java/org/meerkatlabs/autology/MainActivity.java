@@ -4,22 +4,30 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
+import org.meerkatlabs.autology.permissions.StoragePermissionFragment;
 import org.meerkatlabs.autology.settings.SettingsActivity;
+import org.meerkatlabs.autology.utilities.LogProvider;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static int EXTERNAL_STORAGE_REQUEST = 1;
+    private Fragment permissionFragment = null;
+
+    private LogProvider logProvider;
+    private static final int EXTERNAL_STORAGE_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +37,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        requestPermissions();
+        // Load up the preferences from the system
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        logProvider = new LogProvider(this);
+
+        // Check permissions and create the main view when required permissions have been approved
+        createView();
 
         // TODO: Check the status of the file system configured
         // If the value is not provided for the storage directory, then create the value by appending
@@ -44,12 +58,17 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Move the STORAGE_DIRECTORY_KEY value to a new location, or provide a means of
         // abstracting that content away so that the key isn't known to the other acivities.
 
-        // Load up the preferences from the system
-        Log.i("RER", "Loading up the default preferences");
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        // TODO: Would be interesting to fall back to internal storage so that the app is usable
+        // out of the box, and then when external/internal is selected, it will copy the content
+        // over to the other mode.
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Log.i("RER", "Storage directory: " + preferences.getString(SettingsActivity.STORAGE_DIRECTORY_KEY, "Unknown Key"));
+
+    }
+
+    private void createView() {
+        if (checkStoragePermissions()) {
+            // Can load up the list view fragment here
+        }
     }
 
     @Override
@@ -75,19 +94,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void requestPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    EXTERNAL_STORAGE_REQUEST);
-
+    private boolean checkStoragePermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            logProvider.initialize();
+            return true;
         }
+
+        // Going to load up the storage permission fragment and ask for permissions
+        permissionFragment = new StoragePermissionFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_fragment_container, permissionFragment).commit();
+
+        return false;
+    }
+
+    public void storagePermissionClickHandler(View button) {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_REQUEST);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case EXTERNAL_STORAGE_REQUEST:
+                getSupportFragmentManager().beginTransaction()
+                        .remove(permissionFragment).commit();
+                permissionFragment = null;
+                createView();
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 }

@@ -3,8 +3,7 @@
 
     <PreferenceCategory android:title="@string/pref_storage_settings">
         <Preference android:key="pref_key__storage_directory"
-            android:title="@string/pref_title__storage_directory"
-            android:defaultValue="/storage/emulated/0/autology">
+            android:title="@string/pref_title__storage_directory">
 
         </Preference>
     </PreferenceCategory>
