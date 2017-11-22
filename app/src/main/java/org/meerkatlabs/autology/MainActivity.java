@@ -2,7 +2,6 @@ package org.meerkatlabs.autology;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,11 +11,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import org.meerkatlabs.autology.permissions.StoragePermissionFragment;
 import org.meerkatlabs.autology.settings.SettingsActivity;
@@ -24,7 +21,7 @@ import org.meerkatlabs.autology.utilities.LogProvider;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Fragment permissionFragment = null;
+    private Fragment currentFragment = null;
 
     private LogProvider logProvider;
     private static final int EXTERNAL_STORAGE_REQUEST = 1;
@@ -68,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
     private void createView() {
         if (checkStoragePermissions()) {
             // Can load up the list view fragment here
+            currentFragment = new LogListFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_fragment_container, currentFragment).commit();
         }
     }
 
@@ -101,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Going to load up the storage permission fragment and ask for permissions
-        permissionFragment = new StoragePermissionFragment();
+        currentFragment = new StoragePermissionFragment();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_fragment_container, permissionFragment).commit();
+                .add(R.id.main_fragment_container, currentFragment).commit();
 
         return false;
     }
@@ -117,8 +117,8 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case EXTERNAL_STORAGE_REQUEST:
                 getSupportFragmentManager().beginTransaction()
-                        .remove(permissionFragment).commit();
-                permissionFragment = null;
+                        .remove(currentFragment).commit();
+                currentFragment = null;
                 createView();
                 break;
             default:

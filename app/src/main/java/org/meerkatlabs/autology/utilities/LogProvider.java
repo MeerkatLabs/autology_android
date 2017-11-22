@@ -48,8 +48,11 @@ public class LogProvider {
         logsDirectory = new File(rootDirectory, DEFAULT_LOGS_DIRECTORY);
     }
 
-    public File[] getFilesList(Calendar forDate) {
-        return new File[] {};
+    public LogEntry[] getFilesList() {
+
+        return new LogEntry[] {
+                new LogEntry(Calendar.getInstance()),
+        };
     }
 
 }
