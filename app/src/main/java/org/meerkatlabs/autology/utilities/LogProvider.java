@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 
 import org.meerkatlabs.autology.settings.SettingsActivity;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Calendar;
 
 /**
@@ -25,8 +25,10 @@ public class LogProvider {
     private File logsDirectory = null;
 
     private final Context owner;
-    private final String DEFAULT_AUTOLOGY_DIRECTORY = "autology";
-    private final String DEFAULT_LOGS_DIRECTORY = "logs";
+    private final static String DEFAULT_AUTOLOGY_DIRECTORY = "autology";
+    private final static String DEFAULT_LOGS_DIRECTORY = "logs";
+
+    private static final LogEntry[] EMPTY_ENTRY_ARRAY = {};
 
     public LogProvider(Context owner) {
         this.owner = owner;
@@ -49,11 +51,21 @@ public class LogProvider {
         logsDirectory = new File(rootDirectory, DEFAULT_LOGS_DIRECTORY);
     }
 
-    public LogEntry[] getFilesList() {
+    public LogEntry[] getFilesList(Calendar currentDate) {
 
-        return new LogEntry[] {
-        };
+        // If the root directory is not a directory or doesn't exist then return null.
+        if (!rootDirectory.exists() || !rootDirectory.isDirectory()) {
+            return EMPTY_ENTRY_ARRAY;
+        } else if (!logsDirectory.exists() || !logsDirectory.isDirectory()) {
+            return EMPTY_ENTRY_ARRAY;
+        }
 
+        return EMPTY_ENTRY_ARRAY;
+
+    }
+
+    public interface ILogProvider {
+        LogProvider getProvider();
     }
 
 }

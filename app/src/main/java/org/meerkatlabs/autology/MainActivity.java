@@ -19,9 +19,12 @@ import org.meerkatlabs.autology.permissions.StoragePermissionFragment;
 import org.meerkatlabs.autology.settings.SettingsActivity;
 import org.meerkatlabs.autology.utilities.LogProvider;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity implements LogProvider.ILogProvider {
 
     private Fragment currentFragment = null;
+    private LogProvider provider;
 
     private static final int EXTERNAL_STORAGE_REQUEST = 1;
 
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private void createView() {
         if (checkStoragePermissions()) {
             // Can load up the list view fragment here
-            currentFragment = new LogListFragment();
+            currentFragment = LogListFragment.createFragment(Calendar.getInstance());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.main_fragment_container, currentFragment).commit();
         }
@@ -120,5 +123,14 @@ public class MainActivity extends AppCompatActivity {
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    @Override
+    public LogProvider getProvider() {
+        if (provider == null) {
+            provider = new LogProvider(this);
+            provider.initialize();
+        }
+        return provider;
     }
 }
