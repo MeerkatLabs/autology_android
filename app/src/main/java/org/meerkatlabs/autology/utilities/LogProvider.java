@@ -1,5 +1,6 @@
 package org.meerkatlabs.autology.utilities;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -23,11 +24,11 @@ public class LogProvider {
     private File rootDirectory = null;
     private File logsDirectory = null;
 
-    private final AppCompatActivity owner;
+    private final Context owner;
     private final String DEFAULT_AUTOLOGY_DIRECTORY = "autology";
     private final String DEFAULT_LOGS_DIRECTORY = "logs";
 
-    public LogProvider(AppCompatActivity owner) {
+    public LogProvider(Context owner) {
         this.owner = owner;
     }
 
@@ -51,8 +52,8 @@ public class LogProvider {
     public LogEntry[] getFilesList() {
 
         return new LogEntry[] {
-                new LogEntry(Calendar.getInstance()),
         };
+
     }
 
 }

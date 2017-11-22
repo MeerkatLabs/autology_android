@@ -17,4 +17,10 @@ public class LogEntry {
     public Calendar getEntryDate() {
         return entryDate;
     }
+
+    @Override
+    public String toString() {
+
+        return String.format("%tR", entryDate);
+    }
 }

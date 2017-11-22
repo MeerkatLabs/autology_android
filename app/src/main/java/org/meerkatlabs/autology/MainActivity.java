@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment currentFragment = null;
 
-    private LogProvider logProvider;
     private static final int EXTERNAL_STORAGE_REQUEST = 1;
 
     @Override
@@ -36,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Load up the preferences from the system
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        logProvider = new LogProvider(this);
 
         // Check permissions and create the main view when required permissions have been approved
         createView();
@@ -96,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean checkStoragePermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            logProvider.initialize();
             return true;
         }
 
