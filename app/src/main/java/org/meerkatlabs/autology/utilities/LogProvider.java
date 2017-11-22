@@ -60,8 +60,19 @@ public class LogProvider {
             return EMPTY_ENTRY_ARRAY;
         }
 
-        return EMPTY_ENTRY_ARRAY;
+        File yearDirectory = new File(logsDirectory, String.format("%d", currentDate.get(Calendar.YEAR)));
 
+        if (yearDirectory.exists()) {
+            File monthDirectory = new File(yearDirectory, String.format("%02d", currentDate.get(Calendar.MONTH)));
+
+            if (monthDirectory.exists()) {
+                File dayDirectory = new File(monthDirectory, String.format("%02d", currentDate.get(Calendar.DAY_OF_MONTH)));
+
+                // TODO: Do something
+            }
+        }
+
+        return EMPTY_ENTRY_ARRAY;
     }
 
     public interface ILogProvider {

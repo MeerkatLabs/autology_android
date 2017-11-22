@@ -5,6 +5,9 @@
     <!-- Main Activity -->
     <string name="action_settings">Settings</string>
 
+    <!-- Log List Fragment -->
+    <string name="log_list__no_items">No Items Present</string>
+
     <!-- Storage Permission Fragment -->
     <string name="storage_permission__title">Permission Required</string>
     <string name="storage_permission__description"><![CDATA[

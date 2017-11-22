@@ -16,6 +16,7 @@ import android.widget.TextView;
 import org.meerkatlabs.autology.utilities.LogEntry;
 import org.meerkatlabs.autology.utilities.LogProvider;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -67,8 +68,21 @@ public class LogListFragment extends Fragment {
         TextView header = getActivity().findViewById(R.id.log_list_header);
         header.setText(String.format("%tF", currentDate));
 
+        LogEntry[] logEntries =  provider.getProvider().getFilesList(currentDate);
+        TextView noItems = getActivity().findViewById(R.id.no_log_files);
         ListView listView = getActivity().findViewById(R.id.log_list);
-        listView.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.view_log_entry,
-                R.id.log_date,  provider.getProvider().getFilesList(currentDate)));
+
+        if (logEntries.length == 0) {
+            noItems.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.GONE);
+        } else {
+
+            listView.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.view_log_entry,
+                    R.id.log_date, logEntries));
+            listView.setVisibility(View.VISIBLE);
+            noItems.setVisibility(View.GONE);
+        }
+
+
     }
 }
