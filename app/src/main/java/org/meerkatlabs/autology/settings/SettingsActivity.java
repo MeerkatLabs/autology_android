@@ -1,6 +1,7 @@
 package org.meerkatlabs.autology.settings;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -8,15 +9,19 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog;
 
 import org.meerkatlabs.autology.R;
 
 import java.io.File;
+
+// TODO: Request location fine permission in order to allow the logs to be tagged with the location
+// values.  Then will use a similar functionality to the external storage permissions functionality
+// from the Main Activity.
 
 public class SettingsActivity extends AppCompatActivity implements FolderChooserDialog.FolderCallback {
 
@@ -29,6 +34,13 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar ab = getSupportActionBar();
+        ab.setTitle(R.string.settings__title);
+        ab.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
