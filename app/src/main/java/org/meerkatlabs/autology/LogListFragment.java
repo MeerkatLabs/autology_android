@@ -83,6 +83,5 @@ public class LogListFragment extends Fragment {
             noItems.setVisibility(View.GONE);
         }
 
-
     }
 }

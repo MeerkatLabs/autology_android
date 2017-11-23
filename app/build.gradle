@@ -33,4 +33,5 @@ dependencies {
     compile 'com.afollestad.material-dialogs:core:0.9.5.0'
     compile 'com.afollestad.material-dialogs:commons:0.9.5.0'
 
+    implementation 'com.android.support:design:26.1.0'
 }

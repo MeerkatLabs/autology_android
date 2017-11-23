@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import org.meerkatlabs.autology.settings.SettingsActivity;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Calendar;
 
 /**
@@ -73,6 +72,10 @@ public class LogProvider {
         }
 
         return EMPTY_ENTRY_ARRAY;
+    }
+
+    public File createNewLogFile() {
+        return null;
     }
 
     public interface ILogProvider {

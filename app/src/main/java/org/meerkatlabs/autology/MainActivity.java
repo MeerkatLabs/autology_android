@@ -6,11 +6,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,8 +42,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         // Load up the preferences from the system
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        // Check permissions and create the main view when required permissions have been approved
-        createView();
+
 
         // TODO: Check the status of the file system configured
         // If the value is not provided for the storage directory, then create the value by appending
@@ -59,7 +61,23 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         // out of the box, and then when external/internal is selected, it will copy the content
         // over to the other mode.
 
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Check permissions and create the main view when required permissions have been approved
+        createView();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (currentFragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(currentFragment).commit();
+            currentFragment = null;
+        }
     }
 
     private void createView() {
@@ -68,6 +86,11 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
             currentFragment = LogListFragment.createFragment(Calendar.getInstance());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.main_fragment_container, currentFragment).commit();
+
+            // Load up the on click listener for the fab button
+            FloatingActionButton newNote = findViewById(R.id.log_list__new_note);
+            newNote.setVisibility(View.VISIBLE);
+            newNote.setOnClickListener(newNoteListener);
         }
     }
 
@@ -86,6 +109,12 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
+                return true;
+
+            case R.id.action_select_date:
+
+                AppCompatDialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "datePicker");
                 return true;
 
             default:
@@ -133,4 +162,12 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         }
         return provider;
     }
+
+    FloatingActionButton.OnClickListener newNoteListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            LogProvider lp = getProvider();
+
+        }
+    };
 }
