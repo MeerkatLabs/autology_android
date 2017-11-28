@@ -1,6 +1,7 @@
 package org.meerkatlabs.autology;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 
 import org.meerkatlabs.autology.permissions.StoragePermissionFragment;
 import org.meerkatlabs.autology.settings.SettingsActivity;
@@ -24,10 +26,11 @@ import org.meerkatlabs.autology.utilities.LogProvider;
 
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity implements LogProvider.ILogProvider {
+public class MainActivity extends AppCompatActivity implements LogProvider.ILogProvider, DatePickerDialog.OnDateSetListener {
 
     private Fragment currentFragment = null;
     private LogProvider provider;
+    private Calendar currentDate = Calendar.getInstance();
 
     private static final int EXTERNAL_STORAGE_REQUEST = 1;
 
@@ -41,8 +44,6 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
         // Load up the preferences from the system
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-
 
         // TODO: Check the status of the file system configured
         // If the value is not provided for the storage directory, then create the value by appending
@@ -88,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
                     .add(R.id.main_fragment_container, currentFragment).commit();
 
             // Load up the on click listener for the fab button
+            // TODO: The visibility functionality should be removed when the permission is broken
+            // out to it's own activity.
             FloatingActionButton newNote = findViewById(R.id.log_list__new_note);
             newNote.setVisibility(View.VISIBLE);
             newNote.setOnClickListener(newNoteListener);
@@ -113,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
             case R.id.action_select_date:
 
-                AppCompatDialogFragment newFragment = new DatePickerFragment();
+                AppCompatDialogFragment newFragment = DatePickerFragment.createInstance(currentDate);
                 newFragment.show(getSupportFragmentManager(), "datePicker");
                 return true;
 
@@ -129,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         }
 
         // Going to load up the storage permission fragment and ask for permissions
+        // TODO: Should open up this fragment in a new activity instead of as a fragment on this display, the whole functionality
+        // should be moved to a new activity.
         currentFragment = new StoragePermissionFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_fragment_container, currentFragment).commit();
@@ -170,4 +175,13 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
         }
     };
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        // Can load up the list view fragment here
+        currentDate.set(year, month, dayOfMonth);
+        currentFragment = LogListFragment.createFragment(currentDate);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_fragment_container, currentFragment).commit();
+    }
 }
