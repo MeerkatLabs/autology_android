@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -20,9 +21,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
+
 import org.meerkatlabs.autology.permissions.StoragePermissionFragment;
 import org.meerkatlabs.autology.settings.SettingsActivity;
 import org.meerkatlabs.autology.utilities.LogProvider;
+import org.meerkatlabs.autology.utilities.TemplateProvider;
+import org.meerkatlabs.autology.utilities.templates.BaseTemplate;
 
 import java.util.Calendar;
 
@@ -171,8 +178,37 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     FloatingActionButton.OnClickListener newNoteListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            LogProvider lp = getProvider();
+            final LogProvider lp = getProvider();
+            final TemplateProvider provider = new TemplateProvider();
+            // TODO: Find a list of templates that are installed, and display a selection dialog
+            // TODO: Have the log provider create a new file of that template and provide it to
+            // whatever listener is installed to edit it.
 
+
+
+            final MaterialSimpleListAdapter adapter = new MaterialSimpleListAdapter(new MaterialSimpleListAdapter.Callback() {
+                @Override
+                public void onMaterialListItemSelected(MaterialDialog dialog, int index, MaterialSimpleListItem item) {
+                    Log.i("RER", "Selected item: " + item.getId() + " " + index );
+                    BaseTemplate t = (BaseTemplate) item.getTag();
+                    Log.i("RER", t.getName());
+                    dialog.dismiss();
+
+                    lp.createNewLogFile(currentDate, t);
+                }
+            });
+
+            for (BaseTemplate template : provider.getTemplates()) {
+                adapter.add(new MaterialSimpleListItem.Builder(MainActivity.this)
+                        .content(template.getName())
+                        .tag(template)
+                        .build());
+            }
+
+            new MaterialDialog.Builder(MainActivity.this)
+                    .title("Select Template")
+                    .adapter(adapter, null)
+                    .show();
         }
     };
 
@@ -184,4 +220,5 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_fragment_container, currentFragment).commit();
     }
+
 }
