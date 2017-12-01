@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -68,7 +69,7 @@ public class LogListFragment extends Fragment {
         TextView header = getActivity().findViewById(R.id.log_list_header);
         header.setText(String.format("%tF", currentDate));
 
-        LogEntry[] logEntries =  provider.getProvider().getFilesList(currentDate);
+        final LogEntry[] logEntries =  provider.getProvider().getFilesList(currentDate);
         TextView noItems = getActivity().findViewById(R.id.no_log_files);
         ListView listView = getActivity().findViewById(R.id.log_list);
 
@@ -82,6 +83,14 @@ public class LogListFragment extends Fragment {
             listView.setVisibility(View.VISIBLE);
             noItems.setVisibility(View.GONE);
         }
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("RER", "Item Clicked on");
+                Log.i("RER", "Selected Log Entry: " + logEntries[position].toString());
+            }
+        });
 
     }
 }

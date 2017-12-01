@@ -98,7 +98,7 @@ public class LogProvider {
                     }
                 })) {
 
-                    Log.i("RER", "Found file: " + entry);
+//                    Log.i("RER", "Found file: " + entry);
 
                     try {
                         BufferedReader br = new BufferedReader(new FileReader(entry));
@@ -126,12 +126,12 @@ public class LogProvider {
                             line = br.readLine();
                         }
 
-                        Log.i("RER", "Found YAML: " + sb.toString());
+//                        Log.i("RER", "Found YAML: " + sb.toString());
 
                         Yaml yaml = new Yaml();
                         Map<String, Object> frontMatter = yaml.load(sb.toString());
 
-                        Log.i("RER", "Time Value: " + frontMatter.get("time").getClass());
+//                        Log.i("RER", "Time Value: " + frontMatter.get("time").getClass());
 
                         Calendar entryCalendar = Calendar.getInstance();
                         entryCalendar.setTime((Date)frontMatter.get("time"));

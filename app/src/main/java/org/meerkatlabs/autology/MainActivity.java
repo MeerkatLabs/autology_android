@@ -5,7 +5,9 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +33,11 @@ import org.meerkatlabs.autology.utilities.LogProvider;
 import org.meerkatlabs.autology.utilities.TemplateProvider;
 import org.meerkatlabs.autology.utilities.templates.BaseTemplate;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements LogProvider.ILogProvider, DatePickerDialog.OnDateSetListener {
@@ -44,6 +51,15 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+
+        if (intent != null) {
+            Log.i("RER", "Started from: " + intent.getAction());
+        } else {
+            Log.i("RER", "Intent was null");
+        }
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -76,6 +92,17 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         super.onResume();
         // Check permissions and create the main view when required permissions have been approved
         createView();
+
+        Log.i("RER", "Running resume");
+        Intent intent = getIntent();
+        if (intent != null) {
+            Log.i("RER", "Started from: " + intent.getAction());
+        } else {
+            Log.i("RER", "Intent was null");
+        }
+
+        // TODO: Check here to see if there was a log entry that was saved off and if so, then
+        // hand it over to the template to handle the manipulation of the front-matter
     }
 
     @Override
@@ -180,7 +207,6 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         public void onClick(View view) {
             final LogProvider lp = getProvider();
             final TemplateProvider provider = new TemplateProvider();
-            // TODO: Find a list of templates that are installed, and display a selection dialog
             // TODO: Have the log provider create a new file of that template and provide it to
             // whatever listener is installed to edit it.
 
@@ -194,7 +220,19 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
                     Log.i("RER", t.getName());
                     dialog.dismiss();
 
-                    lp.createNewLogFile(currentDate, t);
+                    File f = lp.createNewLogFile(currentDate, t).getAbsoluteFile();
+
+                    Uri uri = Uri.fromFile(f);
+
+                    String mimeType = "text/markdown";
+
+                    // TODO: Currently using the view intent, because Markor 1.5 is broken when
+                    // using the edit intent.  And this is the only version available in FDroid.
+                    // TODO: Make this a configuration option
+                    Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+                    viewIntent.setDataAndType(uri, mimeType);
+                    Intent chooserIntent = Intent.createChooser(viewIntent, "Choose App to Edit");
+                    startActivity(chooserIntent);
                 }
             });
 
@@ -221,4 +259,9 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
                 .replace(R.id.main_fragment_container, currentFragment).commit();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i("RER", "Running on Save instance state");
+    }
 }

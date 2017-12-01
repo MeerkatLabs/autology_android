@@ -5,7 +5,6 @@ import java.util.Calendar;
 /**
  * Created by rerobins on 11/21/17.
  */
-
 public class LogEntry {
 
     Calendar entryDate;
