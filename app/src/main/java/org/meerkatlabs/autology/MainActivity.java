@@ -29,11 +29,12 @@ import org.meerkatlabs.autology.permissions.StoragePermissionFragment;
 import org.meerkatlabs.autology.settings.SettingsActivity;
 import org.meerkatlabs.autology.utilities.logs.LogEntry;
 import org.meerkatlabs.autology.utilities.logs.LogProvider;
-import org.meerkatlabs.autology.utilities.templates.TemplateProvider;
 import org.meerkatlabs.autology.utilities.templates.BaseTemplate;
+import org.meerkatlabs.autology.utilities.templates.TemplateProvider;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements LogProvider.ILogProvider, DatePickerDialog.OnDateSetListener, LogEntry.ILogEntryEditor,
         MaterialSimpleListAdapter.Callback {
@@ -41,20 +42,15 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     private Fragment currentFragment = null;
     private LogProvider provider;
     private Calendar currentDate = Calendar.getInstance();
+    private LogEntry currentlyEditingFile = null;
+
 
     private static final int EXTERNAL_STORAGE_REQUEST = 1;
+    private static final String EDITING_ENTRY_URI_KEY = "editing_entry_uri";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Intent intent = getIntent();
-
-        if (intent != null) {
-            Log.i("RER", "Started from: " + intent.getAction());
-        } else {
-            Log.i("RER", "Intent was null");
-        }
 
         setContentView(R.layout.activity_main);
 
@@ -63,6 +59,15 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
         // Load up the preferences from the system
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        if (savedInstanceState != null) {
+            // Check to see if left because editing a file, and if so, then finish editing the file
+            Uri currentlyEditing = savedInstanceState.getParcelable(EDITING_ENTRY_URI_KEY);
+            if (currentlyEditing != null) {
+                File logFile = new File(currentlyEditing.getPath());
+                currentlyEditingFile = LogEntry.loadLogEntry(logFile);
+            }
+        }
 
         // TODO: Check the status of the file system configured
         // If the value is not provided for the storage directory, then create the value by appending
@@ -89,16 +94,13 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         // Check permissions and create the main view when required permissions have been approved
         createView();
 
-        Log.i("RER", "Running resume");
-        Intent intent = getIntent();
-        if (intent != null) {
-            Log.i("RER", "Started from: " + intent.getAction());
-        } else {
-            Log.i("RER", "Intent was null");
+        if (currentlyEditingFile != null) {
+            Map<String, Object> frontMatter = currentlyEditingFile.getFrontmatter();
+            BaseTemplate template = new BaseTemplate();
+            template.post(frontMatter);
+            currentlyEditingFile.writeFile();
+            currentlyEditingFile = null;
         }
-
-        // TODO: Check here to see if there was a log entry that was saved off and if so, then
-        // hand it over to the template to handle the manipulation of the front-matter
     }
 
     @Override
@@ -224,6 +226,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         Uri uri = Uri.fromFile(logEntry.getLogFile());
         String mimeType = "text/markdown";
 
+        currentlyEditingFile = logEntry;
+
         // TODO: Currently using the view intent, because Markor 1.5 is broken when
         // using the edit intent.  And this is the only version available in FDroid.
         // TODO: Make this a configuration option
@@ -254,5 +258,14 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         LogEntry logEntry = lp.createNewLogFile(currentDate, t);
         editLogEntry(logEntry);
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (currentlyEditingFile != null) {
+            outState.putParcelable(EDITING_ENTRY_URI_KEY, Uri.fromFile(currentlyEditingFile.getLogFile()));
+        }
     }
 }

@@ -41,7 +41,10 @@ public class BaseTemplate implements Comparable<BaseTemplate> {
     }
 
     public Map<String, Object> post(@NonNull Map<String, Object> incoming) {
-        incoming.put(END_TIME_TAG, new Date());
+        // Only update the end_time if it hasn't already been set.
+        if (!incoming.containsKey(END_TIME_TAG) || incoming.get(END_TIME_TAG) == null) {
+            incoming.put(END_TIME_TAG, new Date());
+        }
         return incoming;
     }
 

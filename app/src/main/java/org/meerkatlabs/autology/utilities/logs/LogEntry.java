@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.meerkatlabs.autology.utilities.templates.BaseTemplate;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedReader;
@@ -40,6 +41,10 @@ public class LogEntry {
         return logFile;
     }
 
+    public Map<String, Object> getFrontmatter() {
+        return frontmatter;
+    }
+
     @Override
     public String toString() {
         return String.format("%tR", getEntryDate());
@@ -49,7 +54,7 @@ public class LogEntry {
 
         StringBuffer buffer = new StringBuffer();
         buffer.append("---\n");
-        buffer.append(YAML.dump(frontmatter));
+        buffer.append(YAML.dumpAs(frontmatter, null, DumperOptions.FlowStyle.BLOCK));
         buffer.append("---\n");
 
         if (logFile.exists()) {
@@ -132,11 +137,13 @@ public class LogEntry {
             final String delimiter = line;
 
             // scan YAML front matter
-
             line = br.readLine();
             while (!line.equals(delimiter)) {
                 line = br.readLine();
             }
+
+            // Read the next line so not processing the delimiter
+            line = br.readLine();
 
             StringBuilder sb = new StringBuilder();
             while (line != null) {
