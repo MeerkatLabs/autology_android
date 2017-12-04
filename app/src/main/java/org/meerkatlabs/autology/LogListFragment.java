@@ -14,10 +14,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.meerkatlabs.autology.utilities.LogEntry;
-import org.meerkatlabs.autology.utilities.LogProvider;
+import org.meerkatlabs.autology.utilities.logs.LogEntry;
+import org.meerkatlabs.autology.utilities.logs.LogProvider;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -30,6 +29,8 @@ public class LogListFragment extends Fragment {
     private static final String CURRENT_DATE_BUNDLE_KEY = "currentDate";
 
     private LogProvider.ILogProvider provider;
+    private LogEntry.ILogEntryEditor editor;
+    private LogEntry[] logEntries = new LogEntry[] {};
 
     public static LogListFragment createFragment(Calendar currentDate) {
         LogListFragment fragment = new LogListFragment();
@@ -53,6 +54,7 @@ public class LogListFragment extends Fragment {
         super.onAttach(context);
         try {
             provider = (LogProvider.ILogProvider) context;
+            editor = (LogEntry.ILogEntryEditor) context;
         } catch (ClassCastException cce) {
             Log.e("RER", getClass() + " must be attached to an ILogProvider");
         }
@@ -69,7 +71,7 @@ public class LogListFragment extends Fragment {
         TextView header = getActivity().findViewById(R.id.log_list_header);
         header.setText(String.format("%tF", currentDate));
 
-        final LogEntry[] logEntries =  provider.getProvider().getFilesList(currentDate);
+        logEntries =  provider.getProvider().getFilesList(currentDate);
         TextView noItems = getActivity().findViewById(R.id.no_log_files);
         ListView listView = getActivity().findViewById(R.id.log_list);
 
@@ -87,8 +89,7 @@ public class LogListFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("RER", "Item Clicked on");
-                Log.i("RER", "Selected Log Entry: " + logEntries[position].toString());
+                editor.editLogEntry(logEntries[position]);
             }
         });
 

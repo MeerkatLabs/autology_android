@@ -1,4 +1,4 @@
-package org.meerkatlabs.autology.utilities;
+package org.meerkatlabs.autology.utilities.templates;
 
 import android.support.annotation.NonNull;
 

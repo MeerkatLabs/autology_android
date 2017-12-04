@@ -4,10 +4,8 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -29,18 +27,16 @@ import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
 
 import org.meerkatlabs.autology.permissions.StoragePermissionFragment;
 import org.meerkatlabs.autology.settings.SettingsActivity;
-import org.meerkatlabs.autology.utilities.LogProvider;
-import org.meerkatlabs.autology.utilities.TemplateProvider;
+import org.meerkatlabs.autology.utilities.logs.LogEntry;
+import org.meerkatlabs.autology.utilities.logs.LogProvider;
+import org.meerkatlabs.autology.utilities.templates.TemplateProvider;
 import org.meerkatlabs.autology.utilities.templates.BaseTemplate;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity implements LogProvider.ILogProvider, DatePickerDialog.OnDateSetListener {
+public class MainActivity extends AppCompatActivity implements LogProvider.ILogProvider, DatePickerDialog.OnDateSetListener, LogEntry.ILogEntryEditor,
+        MaterialSimpleListAdapter.Callback {
 
     private Fragment currentFragment = null;
     private LogProvider provider;
@@ -205,40 +201,13 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     FloatingActionButton.OnClickListener newNoteListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            final LogProvider lp = getProvider();
             final TemplateProvider provider = new TemplateProvider();
-            // TODO: Have the log provider create a new file of that template and provide it to
-            // whatever listener is installed to edit it.
 
-
-
-            final MaterialSimpleListAdapter adapter = new MaterialSimpleListAdapter(new MaterialSimpleListAdapter.Callback() {
-                @Override
-                public void onMaterialListItemSelected(MaterialDialog dialog, int index, MaterialSimpleListItem item) {
-                    Log.i("RER", "Selected item: " + item.getId() + " " + index );
-                    BaseTemplate t = (BaseTemplate) item.getTag();
-                    Log.i("RER", t.getName());
-                    dialog.dismiss();
-
-                    File f = lp.createNewLogFile(currentDate, t).getAbsoluteFile();
-
-                    Uri uri = Uri.fromFile(f);
-
-                    String mimeType = "text/markdown";
-
-                    // TODO: Currently using the view intent, because Markor 1.5 is broken when
-                    // using the edit intent.  And this is the only version available in FDroid.
-                    // TODO: Make this a configuration option
-                    Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-                    viewIntent.setDataAndType(uri, mimeType);
-                    Intent chooserIntent = Intent.createChooser(viewIntent, "Choose App to Edit");
-                    startActivity(chooserIntent);
-                }
-            });
+            final MaterialSimpleListAdapter adapter = new MaterialSimpleListAdapter(MainActivity.this);
 
             for (BaseTemplate template : provider.getTemplates()) {
                 adapter.add(new MaterialSimpleListItem.Builder(MainActivity.this)
-                        .content(template.getName())
+                        .content(getString(template.getNameResource()))
                         .tag(template)
                         .build());
             }
@@ -250,6 +219,20 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         }
     };
 
+    public void editLogEntry(@NonNull LogEntry logEntry) {
+
+        Uri uri = Uri.fromFile(logEntry.getLogFile());
+        String mimeType = "text/markdown";
+
+        // TODO: Currently using the view intent, because Markor 1.5 is broken when
+        // using the edit intent.  And this is the only version available in FDroid.
+        // TODO: Make this a configuration option
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+        viewIntent.setDataAndType(uri, mimeType);
+        Intent chooserIntent = Intent.createChooser(viewIntent, getString(R.string.action_editor_selection));
+        startActivity(chooserIntent);
+    }
+
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         // Can load up the list view fragment here
@@ -260,8 +243,16 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.i("RER", "Running on Save instance state");
+    public void onMaterialListItemSelected(MaterialDialog dialog, int index, MaterialSimpleListItem item) {
+
+        final LogProvider lp = getProvider();
+        // Have the log provider create a new log file of that template, and then provide
+        // it to the editor for manipulation.
+        BaseTemplate t = (BaseTemplate) item.getTag();
+        dialog.dismiss();
+
+        LogEntry logEntry = lp.createNewLogFile(currentDate, t);
+        editLogEntry(logEntry);
+
     }
 }
