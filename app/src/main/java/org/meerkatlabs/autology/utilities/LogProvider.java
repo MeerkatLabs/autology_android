@@ -77,85 +77,79 @@ public class LogProvider {
             return EMPTY_ENTRY_ARRAY;
         }
 
-        File yearDirectory = new File(logsDirectory, String.format("%d", currentDate.get(Calendar.YEAR)));
+        File dayDirectory = getDayDirectory(currentDate);
 
-        if (yearDirectory.exists()) {
-            File monthDirectory = new File(yearDirectory, String.format("%02d", currentDate.get(Calendar.MONTH)));
+        if (dayDirectory.exists()) {
+            ArrayList<LogEntry> entries = new ArrayList<>();
 
-            if (monthDirectory.exists()) {
-                File dayDirectory = new File(monthDirectory, String.format("%02d", currentDate.get(Calendar.DAY_OF_MONTH)));
+            // TODO: Actually need to open each of the files and read out the time value in the
+            // markdown, but can't really do that yet because I don't have all of the data in place
+            // yet.
 
-                ArrayList<LogEntry> entries = new ArrayList<>();
+            for (File entry : dayDirectory.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".md");
+                }
+            })) {
 
-                // TODO: Actually need to open each of the files and read out the time value in the
-                // markdown, but can't really do that yet because I don't have all of the data in place
-                // yet.
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(entry));
 
-                for (File entry : dayDirectory.listFiles(new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return name.endsWith(".md");
+                    // detect YAML front matter
+                    String line = br.readLine();
+                    while (line != null && line.isEmpty()) line = br.readLine();
+
+                    if (line == null) {
+                        Log.e("RER", "File is empty");
+                        continue;
                     }
-                })) {
 
-//                    Log.i("RER", "Found file: " + entry);
+                    if (!line.matches("[-]{3,}")) { // use at least three dashes
+                        throw new IllegalArgumentException("No YAML Front Matter");
+                    }
+                    final String delimiter = line;
 
-                    try {
-                        BufferedReader br = new BufferedReader(new FileReader(entry));
-
-                        // detect YAML front matter
-                        String line = br.readLine();
-                        while (line != null && line.isEmpty()) line = br.readLine();
-
-                        if (line == null) {
-                            Log.e("RER", "File is empty");
-                            continue;
-                        }
-
-                        if (!line.matches("[-]{3,}")) { // use at least three dashes
-                            throw new IllegalArgumentException("No YAML Front Matter");
-                        }
-                        final String delimiter = line;
-
-                        // scan YAML front matter
-                        StringBuilder sb = new StringBuilder();
+                    // scan YAML front matter
+                    StringBuilder sb = new StringBuilder();
+                    line = br.readLine();
+                    while (!line.equals(delimiter)) {
+                        sb.append(line);
+                        sb.append("\n");
                         line = br.readLine();
-                        while (!line.equals(delimiter)) {
-                            sb.append(line);
-                            sb.append("\n");
-                            line = br.readLine();
-                        }
-
-//                        Log.i("RER", "Found YAML: " + sb.toString());
-
-                        Yaml yaml = new Yaml();
-                        Map<String, Object> frontMatter = yaml.load(sb.toString());
-
-//                        Log.i("RER", "Time Value: " + frontMatter.get("time").getClass());
-
-                        Calendar entryCalendar = Calendar.getInstance();
-                        entryCalendar.setTime((Date)frontMatter.get("time"));
-                        entries.add(new LogEntry(entryCalendar));
-
-                    } catch(FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
 
+                    Yaml yaml = new Yaml();
+                    Map<String, Object> frontMatter = yaml.load(sb.toString());
+
+                    Calendar entryCalendar = Calendar.getInstance();
+                    entryCalendar.setTime((Date) frontMatter.get("time"));
+                    entries.add(new LogEntry(entryCalendar));
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
 
-                return entries.toArray(new LogEntry[]{});
             }
+
+            return entries.toArray(new LogEntry[]{});
         }
 
         return EMPTY_ENTRY_ARRAY;
     }
 
-    public File createNewLogFile(Calendar currentDate, BaseTemplate template) {
+    private File getDayDirectory(Calendar currentDate) {
         File yearDirectory = new File(logsDirectory, String.format("%d", currentDate.get(Calendar.YEAR)));
         File monthDirectory = new File(yearDirectory, String.format("%02d", currentDate.get(Calendar.MONTH)));
         File dayDirectory = new File(monthDirectory, String.format("%02d", currentDate.get(Calendar.DAY_OF_MONTH)));
+
+        return dayDirectory;
+    }
+
+    public File createNewLogFile(Calendar currentDate, BaseTemplate template) {
+        File dayDirectory = getDayDirectory(currentDate);
 
         dayDirectory.mkdirs();
 
