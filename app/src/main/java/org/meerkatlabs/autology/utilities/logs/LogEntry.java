@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Created by rerobins on 11/21/17.
@@ -26,7 +27,12 @@ public class LogEntry {
     private final Map<String, Object> frontmatter;
     private final File logFile;
     private static final String FRONTMATTER_DELIMITER = "[-]{3,}";
-    private static final Yaml YAML = new Yaml();
+    private static final Yaml YAML;
+    static {
+        DumperOptions dumperOptions = new DumperOptions();
+        dumperOptions.setTimeZone(TimeZone.getDefault());
+        YAML = new Yaml(dumperOptions);
+    }
 
     protected LogEntry(Map<String, Object> _frontmatter, File _logFile) {
         frontmatter = _frontmatter;
