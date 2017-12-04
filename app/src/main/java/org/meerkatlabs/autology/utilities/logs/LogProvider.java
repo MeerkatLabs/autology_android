@@ -89,7 +89,7 @@ public class LogProvider {
 
     private File getDayDirectory(Calendar currentDate) {
         File yearDirectory = new File(logsDirectory, String.format(Locale.ENGLISH, "%d", currentDate.get(Calendar.YEAR)));
-        File monthDirectory = new File(yearDirectory, String.format(Locale.ENGLISH,"%02d", currentDate.get(Calendar.MONTH)));
+        File monthDirectory = new File(yearDirectory, String.format(Locale.ENGLISH,"%02d", currentDate.get(Calendar.MONTH)+1));
         return new File(monthDirectory, String.format(Locale.ENGLISH,"%02d", currentDate.get(Calendar.DAY_OF_MONTH)));
     }
 
