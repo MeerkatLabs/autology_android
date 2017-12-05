@@ -24,6 +24,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
 
+import org.meerkatlabs.autology.permissions.PermissionsActivity;
 import org.meerkatlabs.autology.permissions.StoragePermissionFragment;
 import org.meerkatlabs.autology.settings.SettingsActivity;
 import org.meerkatlabs.autology.utilities.logs.LogEntry;
@@ -46,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     private LogEntry currentlyEditingFile = null;
     private byte[] currentHash = null;
 
-    private static final int EXTERNAL_STORAGE_REQUEST = 1;
     private static final String EDITING_ENTRY_URI_KEY = "editing_entry_uri";
     private static final String EDITING_ENTRY_HASH_KEY = "editing_entry_hash";
     private static final String MAIN_CURRENT_DATE_KEY = "current_date_key";
@@ -75,10 +75,6 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
             currentDate = Calendar.getInstance();
             currentDate.setTime(new Date(savedInstanceState.getLong(MAIN_CURRENT_DATE_KEY)));
         }
-
-        // TODO: Check the status of the file system configured
-        // If the value is not provided for the storage directory, then create the value by appending
-        // autology to the getExternalDirectory().
 
         // TODO: Would be interesting to fall back to internal storage so that the app is usable
         // out of the box, and then when external/internal is selected, it will copy the content
@@ -130,10 +126,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
                     .add(R.id.main_fragment_container, currentFragment).commit();
 
             // Load up the on click listener for the fab button
-            // TODO: The visibility functionality should be removed when the permission is broken
-            // out to it's own activity.
             FloatingActionButton newNote = findViewById(R.id.log_list__new_note);
-            newNote.setVisibility(View.VISIBLE);
             newNote.setOnClickListener(newNoteListener);
         }
     }
@@ -150,13 +143,11 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         switch (item.getItemId())
         {
             case R.id.action_settings:
-
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
 
             case R.id.action_select_date:
-
                 AppCompatDialogFragment newFragment = DatePickerFragment.createInstance(currentDate);
                 newFragment.show(getSupportFragmentManager(), "datePicker");
                 return true;
@@ -173,32 +164,13 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         }
 
         // Going to load up the storage permission fragment and ask for permissions
-        // TODO: Should open up this fragment in a new activity instead of as a fragment on this display, the whole functionality
-        // should be moved to a new activity.
-        currentFragment = new StoragePermissionFragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_fragment_container, currentFragment).commit();
+        Intent changeIntent = new Intent(this, PermissionsActivity.class);
+        changeIntent.putExtra(PermissionsActivity.PERMISSION_TYPE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        startActivity(changeIntent);
 
         return false;
     }
 
-    public void storagePermissionClickHandler(View button) {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_REQUEST);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case EXTERNAL_STORAGE_REQUEST:
-                getSupportFragmentManager().beginTransaction()
-                        .remove(currentFragment).commit();
-                currentFragment = null;
-                createView();
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
 
     @Override
     public LogProvider getProvider() {

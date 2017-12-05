@@ -75,7 +75,8 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
             super.onResume();
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             Preference preference = findPreference(getString(R.string.pref_key__storage_directory));
-            preference.setSummary(preferences.getString(getString(R.string.pref_key__storage_directory), ""));
+            preference.setSummary(preferences.getString(getString(R.string.pref_key__storage_directory),
+                    ""));
 
             preferences.registerOnSharedPreferenceChangeListener(this);
         }

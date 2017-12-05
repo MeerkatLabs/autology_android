@@ -6,9 +6,13 @@
     <string name="action_settings">Settings</string>
     <string name="action_select_date">Select Date</string>
     <string name="action_editor_selection">Choose App to Edit</string>
+    <string name="main_select_template">Select Template</string>
 
     <!-- Log List Fragment -->
     <string name="log_list__no_items">No Items Present</string>
+
+    <!-- Permission Fragment -->
+    <string name="permission__title">Permissions Required</string>
 
     <!-- Storage Permission Fragment -->
     <string name="storage_permission__title">Permission Required</string>
@@ -23,7 +27,6 @@
 
     <!-- Preferences -->
     <string name="pref_storage_settings">Storage Settings</string>
-
     <string name="pref_title__storage_directory">Storage Directory</string>
     <string name="pref_key__storage_directory" translatable="false">pref_key__storage_directory</string>
 
