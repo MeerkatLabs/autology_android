@@ -29,7 +29,7 @@ public class LogProvider {
 
     private final Context owner;
     private final static String DEFAULT_AUTOLOGY_DIRECTORY = "autology";
-    private final static String DEFAULT_LOGS_DIRECTORY = "logs";
+    private final static String DEFAULT_LOGS_DIRECTORY = "log";
     private final static FilenameFilter FILENAME_FILTER = new FilenameFilter() {
         @Override
         public boolean accept(File dir, String name) {
