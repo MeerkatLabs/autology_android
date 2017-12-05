@@ -247,10 +247,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         currentlyEditingFile = logEntry;
         currentHash = currentlyEditingFile.calculateHash();
 
-        // TODO: Currently using the view intent, because Markor 1.5 is broken when
-        // using the edit intent.  And this is the only version available in FDroid.
-        // TODO: Make this a configuration option
-        Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+        Intent viewIntent = new Intent(Intent.ACTION_EDIT);
         viewIntent.setDataAndType(uri, mimeType);
         Intent chooserIntent = Intent.createChooser(viewIntent, getString(R.string.action_editor_selection));
         startActivity(chooserIntent);
