@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +32,7 @@ import org.meerkatlabs.autology.utilities.templates.BaseTemplate;
 import org.meerkatlabs.autology.utilities.templates.TemplateProvider;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -43,10 +43,11 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     private LogProvider provider;
     private Calendar currentDate = Calendar.getInstance();
     private LogEntry currentlyEditingFile = null;
-
+    private byte[] currentHash = null;
 
     private static final int EXTERNAL_STORAGE_REQUEST = 1;
     private static final String EDITING_ENTRY_URI_KEY = "editing_entry_uri";
+    private static final String EDITING_ENTRY_HASH_KEY = "editing_entry_hash";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
                 File logFile = new File(currentlyEditing.getPath());
                 currentlyEditingFile = LogEntry.loadLogEntry(logFile);
             }
+
+            currentHash = savedInstanceState.getByteArray(EDITING_ENTRY_HASH_KEY);
         }
 
         // TODO: Check the status of the file system configured
@@ -95,11 +98,19 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         createView();
 
         if (currentlyEditingFile != null) {
-            Map<String, Object> frontMatter = currentlyEditingFile.getFrontmatter();
-            BaseTemplate template = new BaseTemplate();
-            template.post(frontMatter);
-            currentlyEditingFile.writeFile();
+
+            byte[] newHash = currentlyEditingFile.calculateHash();
+
+            if (!Arrays.equals(newHash, currentHash)) {
+                Map<String, Object> frontMatter = currentlyEditingFile.getFrontmatter();
+                BaseTemplate template = new BaseTemplate();
+                template.post(frontMatter);
+                currentlyEditingFile.writeFile();
+            }
+
             currentlyEditingFile = null;
+            currentHash = null;
+
         }
     }
 
@@ -227,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         String mimeType = "text/markdown";
 
         currentlyEditingFile = logEntry;
+        currentHash = currentlyEditingFile.calculateHash();
 
         // TODO: Currently using the view intent, because Markor 1.5 is broken when
         // using the edit intent.  And this is the only version available in FDroid.
@@ -255,9 +267,14 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         BaseTemplate t = (BaseTemplate) item.getTag();
         dialog.dismiss();
 
-        LogEntry logEntry = lp.createNewLogFile(currentDate, t);
-        editLogEntry(logEntry);
+        // Need to create a new calendar based on the value in current date, but need to set the
+        // HH:MM:SS to the current date and time value.
 
+        Calendar entryCalendar = Calendar.getInstance();
+        entryCalendar.set(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
+
+        LogEntry logEntry = lp.createNewLogFile(entryCalendar, t);
+        editLogEntry(logEntry);
     }
 
     @Override
@@ -266,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
         if (currentlyEditingFile != null) {
             outState.putParcelable(EDITING_ENTRY_URI_KEY, Uri.fromFile(currentlyEditingFile.getLogFile()));
+            outState.putByteArray(EDITING_ENTRY_HASH_KEY, currentHash);
         }
     }
 }

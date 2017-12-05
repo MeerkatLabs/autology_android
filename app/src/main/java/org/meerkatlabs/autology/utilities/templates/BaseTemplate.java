@@ -31,10 +31,15 @@ public class BaseTemplate implements Comparable<BaseTemplate> {
         return this.nameResource;
     }
 
-    public Map<String, Object> pre() {
+    public Map<String, Object> pre(Calendar dateTime) {
+
+        if (dateTime == null) {
+            dateTime = Calendar.getInstance();
+        }
+
         Map<String, Object> returnValue = new HashMap<>();
 
-        returnValue.put(TIME_TAG, new Date());
+        returnValue.put(TIME_TAG, dateTime.getTime());
         returnValue.put(END_TIME_TAG, null);
 
         return returnValue;

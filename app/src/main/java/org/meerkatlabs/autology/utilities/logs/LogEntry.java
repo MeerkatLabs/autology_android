@@ -9,10 +9,17 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -177,6 +184,34 @@ public class LogEntry {
 
     public static interface ILogEntryEditor {
         void editLogEntry(LogEntry entry);
+    }
+
+    public byte[] calculateHash() {
+        byte[] readData = new byte[8192];
+
+
+        try {
+            InputStream is = new FileInputStream(logFile);
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            int numRead;
+            do {
+                numRead = is.read(readData);
+                if (numRead > 0) {
+                    md.update(readData, 0, numRead);
+                }
+            } while (numRead != -1);
+
+            return md.digest();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new byte[]{};
     }
 
 }

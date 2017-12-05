@@ -99,7 +99,7 @@ public class LogProvider {
 
         File newFile = new File(dayDirectory, String.format("%tH%tM%tS.md", currentDate, currentDate, currentDate));
 
-        LogEntry entry = LogEntry.createLogEntry(template.pre(), newFile);
+        LogEntry entry = LogEntry.createLogEntry(template.pre(currentDate), newFile);
         entry.writeFile();
 
         return entry;
