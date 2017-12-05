@@ -27,9 +27,6 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
 
     private static final String STORAGE_DIRECTORY_TAG = "__storage_directory";
 
-    // Setting Key Constants
-    public static final String STORAGE_DIRECTORY_KEY = "pref_key__storage_directory";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +50,7 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
                     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                     SharedPreferences.Editor editor = preferences.edit();
 
-                    editor.putString(STORAGE_DIRECTORY_KEY, folder.getAbsolutePath());
+                    editor.putString(getString(R.string.pref_key__storage_directory), folder.getAbsolutePath());
                     editor.apply();
             }
         }
@@ -77,8 +74,8 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
         public void onResume() {
             super.onResume();
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            Preference preference = findPreference(STORAGE_DIRECTORY_KEY);
-            preference.setSummary(preferences.getString(STORAGE_DIRECTORY_KEY, ""));
+            Preference preference = findPreference(getString(R.string.pref_key__storage_directory));
+            preference.setSummary(preferences.getString(getString(R.string.pref_key__storage_directory), ""));
 
             preferences.registerOnSharedPreferenceChangeListener(this);
         }
@@ -93,8 +90,8 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 
             if (isAdded() && preference.hasKey()) {
-                switch (preference.getKey()) {
-                    case STORAGE_DIRECTORY_KEY:
+
+                if (getString(R.string.pref_key__storage_directory).equals(preference.getKey())) {
                         new FolderChooserDialog.Builder(getActivity())
                                 .chooseButton(R.string.md_choose_label)  // changes label of the choose button
                                 .initialPath(Environment.getExternalStorageDirectory().getAbsolutePath())  // changes initial path, defaults to external storage directory
@@ -111,7 +108,7 @@ public class SettingsActivity extends AppCompatActivity implements FolderChooser
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            Preference preference = findPreference(STORAGE_DIRECTORY_KEY);
+            Preference preference = findPreference(getString(R.string.pref_key__storage_directory));
             preference.setSummary(sharedPreferences.getString(key, ""));
         }
     }

@@ -80,15 +80,6 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         // If the value is not provided for the storage directory, then create the value by appending
         // autology to the getExternalDirectory().
 
-        // TODO: When the directory structure is changed, then need to reload the content of the
-        // list panel
-
-        // TODO: Storage Engine for the application, responsible for providing the contents of
-        // the directory log, adding/removing files from the log
-
-        // TODO: Move the STORAGE_DIRECTORY_KEY value to a new location, or provide a means of
-        // abstracting that content away so that the key isn't known to the other acivities.
-
         // TODO: Would be interesting to fall back to internal storage so that the app is usable
         // out of the box, and then when external/internal is selected, it will copy the content
         // over to the other mode.
@@ -233,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
             }
 
             new MaterialDialog.Builder(MainActivity.this)
-                    .title("Select Template")
+                    .title(R.string.main_select_template)
                     .adapter(adapter, null)
                     .show();
         }
@@ -273,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
         // Need to create a new calendar based on the value in current date, but need to set the
         // HH:MM:SS to the current date and time value.
-
         Calendar entryCalendar = Calendar.getInstance();
         entryCalendar.set(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
 
@@ -288,7 +278,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         if (currentlyEditingFile != null) {
             outState.putParcelable(EDITING_ENTRY_URI_KEY, Uri.fromFile(currentlyEditingFile.getLogFile()));
             outState.putByteArray(EDITING_ENTRY_HASH_KEY, currentHash);
-            outState.putLong(MAIN_CURRENT_DATE_KEY, currentDate.getTime().getTime());
         }
+
+        outState.putLong(MAIN_CURRENT_DATE_KEY, currentDate.getTime().getTime());
     }
 }
