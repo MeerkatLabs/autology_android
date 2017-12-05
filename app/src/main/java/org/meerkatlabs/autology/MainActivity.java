@@ -34,6 +34,7 @@ import org.meerkatlabs.autology.utilities.templates.TemplateProvider;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements LogProvider.ILogProvider, DatePickerDialog.OnDateSetListener, LogEntry.ILogEntryEditor,
@@ -41,13 +42,14 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
     private Fragment currentFragment = null;
     private LogProvider provider;
-    private Calendar currentDate = Calendar.getInstance();
+    private Calendar currentDate = null;
     private LogEntry currentlyEditingFile = null;
     private byte[] currentHash = null;
 
     private static final int EXTERNAL_STORAGE_REQUEST = 1;
     private static final String EDITING_ENTRY_URI_KEY = "editing_entry_uri";
     private static final String EDITING_ENTRY_HASH_KEY = "editing_entry_hash";
+    private static final String MAIN_CURRENT_DATE_KEY = "current_date_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
             }
 
             currentHash = savedInstanceState.getByteArray(EDITING_ENTRY_HASH_KEY);
+            currentDate = Calendar.getInstance();
+            currentDate.setTime(new Date(savedInstanceState.getLong(MAIN_CURRENT_DATE_KEY)));
         }
 
         // TODO: Check the status of the file system configured
@@ -94,11 +98,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     @Override
     protected void onResume() {
         super.onResume();
-        // Check permissions and create the main view when required permissions have been approved
-        createView();
 
         if (currentlyEditingFile != null) {
-
             byte[] newHash = currentlyEditingFile.calculateHash();
 
             if (!Arrays.equals(newHash, currentHash)) {
@@ -110,8 +111,14 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
             currentlyEditingFile = null;
             currentHash = null;
-
         }
+
+        if (currentDate == null) {
+            currentDate = Calendar.getInstance();
+        }
+
+        // Check permissions and create the main view when required permissions have been approved
+        createView();
     }
 
     @Override
@@ -127,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
     private void createView() {
         if (checkStoragePermissions()) {
             // Can load up the list view fragment here
-            currentFragment = LogListFragment.createFragment(Calendar.getInstance());
+            currentFragment = LogListFragment.createFragment(currentDate);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.main_fragment_container, currentFragment).commit();
 
@@ -284,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
         if (currentlyEditingFile != null) {
             outState.putParcelable(EDITING_ENTRY_URI_KEY, Uri.fromFile(currentlyEditingFile.getLogFile()));
             outState.putByteArray(EDITING_ENTRY_HASH_KEY, currentHash);
+            outState.putLong(MAIN_CURRENT_DATE_KEY, currentDate.getTime().getTime());
         }
     }
 }
