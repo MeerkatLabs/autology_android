@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
             byte[] newHash = currentlyEditingFile.calculateHash();
 
             if (!Arrays.equals(newHash, currentHash)) {
+                currentlyEditingFile.reloadFrontmatter();
                 Map<String, Object> frontMatter = currentlyEditingFile.getFrontmatter();
                 BaseTemplate template = new BaseTemplate();
                 template.post(frontMatter);

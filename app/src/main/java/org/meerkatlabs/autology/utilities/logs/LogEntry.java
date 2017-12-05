@@ -58,6 +58,11 @@ public class LogEntry {
         return frontmatter;
     }
 
+    public void reloadFrontmatter() {
+        frontmatter.clear();
+        frontmatter.putAll(loadFrontMatter(logFile));
+    }
+
     @Override
     public String toString() {
         Calendar entryDate = getEntryDate();
@@ -113,7 +118,7 @@ public class LogEntry {
             }
 
             if (!line.matches(FRONTMATTER_DELIMITER)) { // use at least three dashes
-                throw new IllegalArgumentException("No YAML Front Matter");
+                return Collections.emptyMap();
             }
             final String delimiter = line;
 
