@@ -60,7 +60,12 @@ public class LogEntry {
 
     @Override
     public String toString() {
-        return String.format("%tR", getEntryDate());
+        Calendar entryDate = getEntryDate();
+        if (entryDate == null) {
+            return "UNDEFINED";
+        } else {
+            return String.format("%tR", getEntryDate());
+        }
     }
 
     public void writeFile() {

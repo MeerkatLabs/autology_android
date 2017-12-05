@@ -70,9 +70,13 @@ public class BaseTemplate implements Comparable<BaseTemplate> {
         if (frontMatter.containsKey(tag)) {
             Object timeValue = frontMatter.get(tag);
             if (timeValue != null) {
-                Calendar entryDate = Calendar.getInstance();
-                entryDate.setTime((Date) timeValue );
-                return entryDate;
+                try {
+                    Calendar entryDate = Calendar.getInstance();
+                    entryDate.setTime((Date) timeValue);
+                    return entryDate;
+                } catch (ClassCastException e) {
+                    return null;
+                }
             }
         }
 

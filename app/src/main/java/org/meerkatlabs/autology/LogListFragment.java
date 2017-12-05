@@ -79,7 +79,8 @@ public class LogListFragment extends Fragment {
             noItems.setVisibility(View.VISIBLE);
             listView.setVisibility(View.GONE);
         } else {
-
+            // TODO: Instead of allowing the data to determine it's string, build it based on locale
+            // so it can be set in the settings of the application or in the settings of the phone
             listView.setAdapter(new ArrayAdapter<>(getActivity(), R.layout.view_log_entry,
                     R.id.log_date, logEntries));
             listView.setVisibility(View.VISIBLE);
