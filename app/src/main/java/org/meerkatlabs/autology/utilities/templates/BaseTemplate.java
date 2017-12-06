@@ -3,6 +3,7 @@ package org.meerkatlabs.autology.utilities.templates;
 import android.support.annotation.NonNull;
 
 import org.meerkatlabs.autology.R;
+import org.meerkatlabs.autology.BuildConfig;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +17,10 @@ public class BaseTemplate implements Comparable<BaseTemplate> {
 
     private static final String TIME_TAG = "time";
     private static final String END_TIME_TAG = "end_time";
+    private static final String AGENT_DEFINITION = "autology_agent";
+    private static final String AGENT_NAME = "name";
+    private static final String AGENT_VERSION = "version";
+    private static final String FILE_VERSION = "file_definition";
 
     private final int nameResource;
 
@@ -41,6 +46,13 @@ public class BaseTemplate implements Comparable<BaseTemplate> {
 
         returnValue.put(TIME_TAG, dateTime.getTime());
         returnValue.put(END_TIME_TAG, null);
+
+        Map<String, Object> agentData = new HashMap<>();
+        agentData.put(AGENT_VERSION, BuildConfig.VERSION_NAME);
+        agentData.put(FILE_VERSION, BuildConfig.FILE_VERSION);
+        agentData.put(AGENT_NAME, BuildConfig.APPLICATION_ID);
+
+        returnValue.put(AGENT_DEFINITION, agentData);
 
         return returnValue;
     }
