@@ -18,6 +18,14 @@ public class TemplateProvider {
 
     public TemplateProvider() {
         templates.add(new BaseTemplate());
+        templates.add(new CoffeeTemplate());
+        templates.add(new AlcoholTemplate());
+        templates.add(new ExerciseTemplate());
+        templates.add(new GroceriesTemplate());
+        templates.add(new HockeyTemplate());
+        templates.add(new ShoppingTemplate());
+        templates.add(new SleepingTemplate());
+        templates.add(new SodaTemplate());
     }
 
     public void add(@NonNull BaseTemplate template) {

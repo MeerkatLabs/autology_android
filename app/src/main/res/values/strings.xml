@@ -32,4 +32,12 @@
 
     <!-- Templates -->
     <string name="template_base_name">Base Template</string>
+    <string name="template_coffe_name">Coffee</string>
+    <string name="template_soda_name">Soda</string>
+    <string name="template_alcohol_name">Alcohol</string>
+    <string name="template_sleeping_name">Sleeping</string>
+    <string name="template_groceries_name">Groceries</string>
+    <string name="template_shopping_name">Shopping</string>
+    <string name="template_exercise_name">Exercise</string>
+    <string name="template_hockey_name">Hockey</string>
 </resources>

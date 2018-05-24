@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import org.meerkatlabs.autology.R;
 import org.meerkatlabs.autology.BuildConfig;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,12 +16,14 @@ import java.util.Map;
  */
 public class BaseTemplate implements Comparable<BaseTemplate> {
 
-    private static final String TIME_TAG = "time";
-    private static final String END_TIME_TAG = "end_time";
-    private static final String AGENT_DEFINITION = "autology_agent";
-    private static final String AGENT_NAME = "name";
-    private static final String AGENT_VERSION = "version";
-    private static final String FILE_VERSION = "file_definition";
+    protected static final String TIME_TAG = "time";
+    protected static final String END_TIME_TAG = "end_time";
+    protected static final String AGENT_DEFINITION = "autology_agent";
+    protected static final String AGENT_NAME = "name";
+    protected static final String AGENT_VERSION = "version";
+    protected static final String FILE_VERSION = "file_definition";
+    protected static final String ACTIVITIES_TAG = "activities";
+    protected static final String LOCATION_TAG = "location";
 
     private final int nameResource;
 
@@ -47,12 +50,16 @@ public class BaseTemplate implements Comparable<BaseTemplate> {
         returnValue.put(TIME_TAG, dateTime.getTime());
         returnValue.put(END_TIME_TAG, null);
 
+        returnValue.put(ACTIVITIES_TAG, new ArrayList<String>());
+
         Map<String, Object> agentData = new HashMap<>();
         agentData.put(AGENT_VERSION, BuildConfig.VERSION_NAME);
         agentData.put(FILE_VERSION, BuildConfig.FILE_VERSION);
         agentData.put(AGENT_NAME, BuildConfig.APPLICATION_ID);
 
         returnValue.put(AGENT_DEFINITION, agentData);
+
+        returnValue.put(LOCATION_TAG, null);
 
         return returnValue;
     }
