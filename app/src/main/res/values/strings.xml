@@ -40,4 +40,10 @@
     <string name="template_shopping_name">Shopping</string>
     <string name="template_exercise_name">Exercise</string>
     <string name="template_hockey_name">Hockey</string>
+    <string name="template_movies_name">Movies</string>
+    <string name="template_television_name">Television</string>
+    <string name="template_video_games_name">Video Games</string>
+    <string name="template_dining_name">Dining</string>
+    <string name="template_social_name">Social</string>
+
 </resources>

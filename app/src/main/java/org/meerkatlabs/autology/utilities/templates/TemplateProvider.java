@@ -26,6 +26,11 @@ public class TemplateProvider {
         templates.add(new ShoppingTemplate());
         templates.add(new SleepingTemplate());
         templates.add(new SodaTemplate());
+        templates.add(new DiningTemplate());
+        templates.add(new MoviesTemplate());
+        templates.add(new SocialTemplate());
+        templates.add(new TelevisionTemplate());
+        templates.add(new VideoGameTemplate());
     }
 
     public void add(@NonNull BaseTemplate template) {
