@@ -31,6 +31,7 @@ public class TemplateProvider {
         templates.add(new SocialTemplate());
         templates.add(new TelevisionTemplate());
         templates.add(new VideoGameTemplate());
+        templates.add(new WeightTemplate());
     }
 
     public void add(@NonNull BaseTemplate template) {

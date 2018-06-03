@@ -45,5 +45,6 @@
     <string name="template_video_games_name">Video Games</string>
     <string name="template_dining_name">Dining</string>
     <string name="template_social_name">Social</string>
+    <string name="template_weight_name">Weight</string>
 
 </resources>
