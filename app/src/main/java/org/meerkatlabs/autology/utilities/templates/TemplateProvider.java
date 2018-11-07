@@ -32,6 +32,7 @@ public class TemplateProvider {
         templates.add(new TelevisionTemplate());
         templates.add(new VideoGameTemplate());
         templates.add(new WeightTemplate());
+        templates.add(new ProjectTemplate());
     }
 
     public void add(@NonNull BaseTemplate template) {

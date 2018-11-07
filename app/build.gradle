@@ -36,7 +36,7 @@ dependencies {
     compile 'com.afollestad.material-dialogs:core:0.9.5.0'
     compile 'com.afollestad.material-dialogs:commons:0.9.5.0'
 
-    compile 'org.yaml:snakeyaml:1.19'
+    compile 'org.yaml:snakeyaml:1.23'
 
     implementation 'com.android.support:design:27.0.2'
 }

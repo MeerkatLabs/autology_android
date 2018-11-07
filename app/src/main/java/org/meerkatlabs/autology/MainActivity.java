@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.Toolbar;
@@ -205,7 +206,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
     public void editLogEntry(@NonNull LogEntry logEntry) {
 
-        Uri uri = Uri.fromFile(logEntry.getLogFile());
+        Uri uri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider",
+                logEntry.getLogFile());
         String mimeType = "text/markdown";
 
         currentlyEditingFile = logEntry;
@@ -213,6 +215,8 @@ public class MainActivity extends AppCompatActivity implements LogProvider.ILogP
 
         Intent viewIntent = new Intent(Intent.ACTION_EDIT);
         viewIntent.setDataAndType(uri, mimeType);
+        viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        viewIntent.putExtra("real_file_path_2", logEntry.getLogFile().getAbsolutePath());
         Intent chooserIntent = Intent.createChooser(viewIntent, getString(R.string.action_editor_selection));
         startActivity(chooserIntent);
     }

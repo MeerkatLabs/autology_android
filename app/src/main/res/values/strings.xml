@@ -33,6 +33,7 @@
     <!-- Templates -->
     <string name="template_base_name">Base Template</string>
     <string name="template_coffe_name">Coffee</string>
+    <string name="template_project_name">Project</string>
     <string name="template_soda_name">Soda</string>
     <string name="template_alcohol_name">Alcohol</string>
     <string name="template_sleeping_name">Sleeping</string>
